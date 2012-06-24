@@ -1,6 +1,7 @@
 #Generate a rails app with user functionality (user model/controller and authentication/authorization)
 
 run "rm public/index.html"
+run "rm app/views/layouts/application.html.erb"
 
 rake "db:create"
 
@@ -29,7 +30,8 @@ gem 'capistrano'
 gem 'capistrano-ext'
 
 run "bundle install"
-run "rails g bootstrap_form_builder:install -t haml"
+
+run "rails g bootstrap2_form_builder:install -t haml"
 run "rails g authlogic:session"
 run "rails generate rspec:install"
 
@@ -38,6 +40,8 @@ generate :controller, "Users"
 
 inject_into_file 'app\models\user.rb', :after => "class User < ActiveRecord::Base\n" do <<-'RUBY'
   acts_as_authentic
+
+  validates :name, :email, :presence => true
 RUBY
 end
 
@@ -130,6 +134,26 @@ inject_into_file 'app\controllers\application_controller.rb', :after => "protect
     session[:return_to] = nil
   end
 RUBY
+end
+
+create_file "app/views/layouts/application.html.haml" do <<-'HAML'
+!!! HTML
+  %html
+    %head
+      %title
+        = (yield :title)
+
+      = stylesheet_link_tag "application", :media => "all"
+      = javascript_include_tag "application"
+      = yield :javascripts
+      = csrf_meta_tags
+
+      /HTML5 shim, for IE6-8 support
+      /[if lt IE 9]
+        %script{:src => "http://html5shim.googlecode.com/svn/trunk/html5.js", :type => "text/javascript"}
+    %body
+      = yield
+HAML
 end
 
 initializer 'ruby_utility_methods.rb', <<-CODE

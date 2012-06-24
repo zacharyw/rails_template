@@ -1,3 +1,5 @@
+#Generate a rails app with user functionality (user model/controller and authentication/authorization)
+
 run "rm public/index.html"
 
 rake "db:create"

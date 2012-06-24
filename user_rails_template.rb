@@ -38,6 +38,8 @@ run "rails generate rspec:install"
 generate :model, "User name:string email:string"
 generate :controller, "Users"
 
+rake "db:migrate"
+
 inject_into_file 'app\models\user.rb', :after => "class User < ActiveRecord::Base\n" do <<-'RUBY'
   acts_as_authentic
 

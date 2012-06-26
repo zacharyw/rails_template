@@ -40,6 +40,8 @@ generate :model, "User name:string email:string crypted_password:string password
                   current_login_at:datetime last_login_at:datetime current_login_ip:string last_login_ip:string"
 generate :controller, "Users"
 
+rake "db:migrate"
+
 inject_into_file 'app\models\user.rb', :after => "class User < ActiveRecord::Base\n" do <<-'RUBY'
   acts_as_authentic
 

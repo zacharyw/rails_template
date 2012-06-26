@@ -1,4 +1,4 @@
-= Zach's Rails Templates
+# Zach's Rails Templates
 
 Just a collection of templates for generating rails apps.
 

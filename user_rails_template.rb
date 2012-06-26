@@ -35,13 +35,15 @@ run "rails g bootstrap2_form_builder:install -t haml"
 run "rails g authlogic:session"
 run "rails generate rspec:install"
 
-generate :model, "User name:string email:string"
+generate :model, "User name:string email:string crypted_password:string password_salt:string persistence_token:string
+                  perishable_token:string login_count:integer failed_login_count:integer last_request_at:datetime
+                  current_login_at:datetime last_login_at:datetime current_login_ip:string last_login_ip:string"
 generate :controller, "Users"
 
 inject_into_file 'app\models\user.rb', :after => "class User < ActiveRecord::Base\n" do <<-'RUBY'
   acts_as_authentic
 
-  validates :name, :email, :presence => true
+  validates :name, :email, :crypted_password, :password_salt, :persistence_token, :perishable_token, :login_count, :failed_login_count, :presence => true
 RUBY
 end
 

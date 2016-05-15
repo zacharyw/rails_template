@@ -1,3 +1,11 @@
+# To be used with the Rails 5 'new' generator. Builds out a website structure
+# with the Twitter Bootstrap CSS framework (scss), Rspec/FactoryGirl for testing,
+# Devise for authentication, and Pundit for authorization. It reshapes the Devise
+# views and forms with Bootstrap markup.
+#
+# Does not migrate the database. Check the generated User model and migration
+# to see if there's anything you want to change.
+
 gem 'bootstrap-sass', '~> 3.3.6'
 gem 'bootstrap3_form_builder', '1.0.1'
 
@@ -12,6 +20,7 @@ end
 after_bundle do
   git :init
 
+  #Ignore Intellij files
   append_file '.gitignore' do
     "*.iml\n"
     ".idea/*\n"
@@ -20,6 +29,7 @@ after_bundle do
   git add: '.'
   git commit: "-a -m 'Initial Rails skeleton'"
 
+  # Use coffeescript for the base JS file.
   remove_file 'app/assets/javascripts/application.js'
 
   create_file 'app/assets/javascripts/application.js.coffee' do
@@ -45,6 +55,7 @@ after_bundle do
   """
   end
 
+  # Use sass for the base css file.
   remove_file 'app/assets/stylesheets/application.css'
   create_file 'app/assets/stylesheets/application.scss' do
   """
@@ -69,8 +80,8 @@ after_bundle do
 
   generate('bootstrap3_form_builder:install')
 
-  inject_into_file 'app/views/layouts/application.html.erb', :after => '<head>\n' do
-    '<meta name="viewport" content="width=device-width, initial-scale=1">'
+  inject_into_file 'app/views/layouts/application.html.erb', :after => "<head>\n" do
+    " <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
   end
 
   git add: '.'
@@ -80,8 +91,8 @@ after_bundle do
 
   comment_lines 'spec/rails_helper.rb', /fixture_path/
 
-  inject_into_file 'spec/rails_helper.rb', :after => '# config.fixture_path = "#{::Rails.root}/spec/fixtures"\n' do
-    'config.include FactoryGirl::Syntax::Methods'
+  inject_into_file 'spec/rails_helper.rb', :after => "# config.fixture_path = \"\#{::Rails.root}/spec/fixtures\"\n" do
+    "config.include FactoryGirl::Syntax::Methods"
   end
 
   git add: '.'
@@ -91,9 +102,9 @@ after_bundle do
   run 'rails generate devise:views'
   generate(:controller, 'Home', 'index')
 
-  environment "add config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }", env: 'development'
+  environment "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }", env: 'development'
 
-  inject_into_file 'app/views/layouts/application.html.erb', :after => '<body>\n' do
+  inject_into_file 'app/views/layouts/application.html.erb', :after => "<body>\n" do
     """
     <div class=\"container\">
       <div class=\"row\">
@@ -103,12 +114,12 @@ after_bundle do
         <% if alert %>
             <p class=\"alert alert-danger\"><%= alert %></p>
         <% end %>
+      </div>
     """
   end
 
-  inject_into_file 'app/views/layouts/application.html.erb', :after => '<%= yield %>\n' do
+  inject_into_file 'app/views/layouts/application.html.erb', :after => "<%= yield %>\n" do
     """
-      </div>
     </div>
     """
   end

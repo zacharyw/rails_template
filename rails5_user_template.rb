@@ -15,6 +15,8 @@ gem 'pundit'
 gem_group :development, :test do
   gem 'rspec-rails', '~> 3.5.0.beta3'
   gem 'factory_girl_rails'
+  gem 'pry'
+  gem 'pry-byebug'
 end
 
 after_bundle do
@@ -214,10 +216,7 @@ after_bundle do
     <%= f.password_field :password, autocomplete: \"off\" %>
 
   <% if devise_mapping.rememberable? -%>
-    <div class=\"form-group\">
-      <%= f.check_box :remember_me %>
-      <%= f.label :remember_me, class: 'form-control' %>
-    </div>
+    <%= f.check_box :remember_me %>
   <% end -%>
 
   <%= f.submit \"Log in\" %>

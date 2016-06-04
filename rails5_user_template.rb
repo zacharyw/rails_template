@@ -53,6 +53,10 @@ after_bundle do
 @import \"bootstrap\";
   """
   end
+  
+  inject_into_file 'app/assets/javascripts/application.js', :after => "//= require jquery\n" do
+    "//= require bootstrap-sprockets"
+  end
 
   generate('bootstrap3_form_builder:install')
 

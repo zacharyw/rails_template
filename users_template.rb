@@ -1,110 +1,22 @@
-# To be used with the Rails 5 'new' generator. Builds out a website structure
-# with the Twitter Bootstrap CSS framework (scss), Rspec/FactoryGirl for testing,
 # Devise for authentication, and Pundit for authorization. It reshapes the Devise
 # views and forms with Bootstrap markup.
 #
 # Does not migrate the database. Check the generated User model and migration
 # to see if there's anything you want to change.
 
-gem 'bootstrap-sass', '~> 3.3.6'
-gem 'bootstrap3_form_builder', '1.0.1'
+# Can be used with 'rails new', but generally intended to be applied to an existing rails app to add authentication/authorization:
+
+# $ bin/rails app:template LOCATION=~/users_template.rb
 
 gem 'devise'
 gem 'pundit'
 
-gem_group :development, :test do
-  gem 'rspec-rails', '~> 3.5.0.beta3'
-  gem 'factory_girl_rails'
-  gem 'pry'
-  gem 'pry-byebug'
-end
-
-after_bundle do
-  git :init
-
-  #Ignore Intellij files
-  append_file '.gitignore' do
-    "*.iml\n"
-    ".idea/*\n"
-  end
-
-  git add: '.'
-  git commit: "-a -m 'Initial Rails skeleton'"
-
-  # Use sass for the base css file.
-  remove_file 'app/assets/stylesheets/application.css'
-  create_file 'app/assets/stylesheets/application.scss' do
-  """
-/*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
- *
- * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
- * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
- *
- * You're free to add application-wide styles to this file and they'll appear at the bottom of the
- * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
- * files in this directory. Styles in this file should be added after the last require_* statement.
- * It is generally better to create a new file per style scope.
- *
- */
-
-@import \"bootstrap-sprockets\";
-@import \"bootstrap\";
-  """
-  end
-  
-  inject_into_file 'app/assets/javascripts/application.js', :after => "//= require jquery\n" do
-    "//= require bootstrap-sprockets"
-  end
-
-  generate('bootstrap3_form_builder:install')
-
-  inject_into_file 'app/views/layouts/application.html.erb', :after => "<head>\n" do
-    " <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
-  end
-
-  git add: '.'
-  git commit: "-a -m 'Add Twitter Bootstrap'"
-
-  run 'rails generate rspec:install'
-
-  comment_lines 'spec/rails_helper.rb', /fixture_path/
-
-  inject_into_file 'spec/rails_helper.rb', :after => "# config.fixture_path = \"\#{::Rails.root}/spec/fixtures\"\n" do
-    "config.include FactoryGirl::Syntax::Methods"
-  end
-
-  git add: '.'
-  git commit: "-a -m 'Setup rspec and factory girl'"
+run 'bundle install'
 
   run 'rails generate devise:install'
   run 'rails generate devise:views'
-  generate(:controller, 'Home', 'index')
 
   environment "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }", env: 'development'
-
-  inject_into_file 'app/views/layouts/application.html.erb', :after => "<body>\n" do
-    """
-    <div class=\"container\">
-      <div class=\"row\">
-        <% if notice %>
-          <p class=\"alert alert-info\"><%= notice %></p>
-        <% end %>
-        <% if alert %>
-            <p class=\"alert alert-danger\"><%= alert %></p>
-        <% end %>
-      </div>
-    """
-  end
-
-  inject_into_file 'app/views/layouts/application.html.erb', :after => "<%= yield %>\n" do
-    """
-    </div>
-    """
-  end
-
-  route 'root to: "home#index"'
 
   remove_file 'app/views/devise/confirmations/new.html.erb'
   remove_file 'app/views/devise/passwords/edit.html.erb'
@@ -231,11 +143,8 @@ after_bundle do
   end
 
   inject_into_file 'app/controllers/application_controller.rb', :after => "class ApplicationController < ActionController::Base\n" do
-    "include Pundit"
+    "include Pundit\n"
   end
 
-  git add: '.'
-  git commit: "-a -m 'Add devise and pundit'"
-end
-
-run 'bundle install'
+  git add: '--all .'
+  #git commit: "-a -m 'Add devise and pundit'"
